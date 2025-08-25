@@ -1,0 +1,18 @@
+package com.devapp.studentms.service;
+
+import com.devapp.studentms.request.CourseRequest;
+import com.devapp.studentms.response.CourseResponse;
+
+import java.util.List;
+
+public interface CourseService {
+    CourseResponse addCourse(CourseRequest request);
+
+    List<CourseResponse> fetchCourses();
+
+    CourseResponse fetchCourse(Long courseId);
+
+    boolean deleteCourse(Long courseId);
+
+    CourseResponse updateCourse(Long courseId, CourseRequest updatedRequest);
+}
