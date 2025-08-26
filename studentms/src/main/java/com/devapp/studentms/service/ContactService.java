@@ -11,6 +11,4 @@ public interface ContactService {
     ContactResponse getContact(Long studentId);
 
     ContactResponse updateContact(ContactRequest updatedContact, Long studentId);
-
-    boolean deleteContact(Long studentId);
 }

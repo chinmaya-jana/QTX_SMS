@@ -16,40 +16,33 @@ import java.util.List;
 public class ContactController {
     private final ContactService contactService;
 
+    // Get all contacts
     @GetMapping
     public ResponseEntity<List<ContactResponse>> fetchContacts() {
         List<ContactResponse> responses = contactService.fetchContacts();
         return ResponseEntity.ok(responses);
     }
 
-    //example: http:localhost:8080/api/contact?studentId=1
-    @GetMapping
-    public ResponseEntity<ContactResponse> getContact(@RequestParam("studentId") Long studentId) {
+    // Get contact by studentId
+    // url: http:localhost:8080/api/contact?studentId=1
+    @GetMapping(params = "studentId")
+    public ResponseEntity<ContactResponse> getContact(@RequestParam Long studentId) {
         ContactResponse response = contactService.getContact(studentId);
         if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         return ResponseEntity.ok(response);
     }
 
-    // Updating contact details can be done by an authenticated student/user.
+    // Update contact by studentId
     //example: http://localhost:8080/api/contact?studentId=1
-    @PutMapping
+    @PutMapping(params = "studentId")
     public ResponseEntity<ContactResponse> updateContact(
             @RequestBody ContactRequest updatedContact,
-            @RequestParam("studentId") Long studentId) {
+            @RequestParam Long studentId) {
         ContactResponse response = contactService.updateContact(updatedContact, studentId);
 
         if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         return ResponseEntity.ok(response);
-    }
-
-    // example: http://localhost:8080/api/contact?studentId=1
-    @DeleteMapping
-    public ResponseEntity<String> deleteContact(@RequestParam("studentId") Long studentId) {
-        boolean deleted = contactService.deleteContact(studentId);
-        if(deleted) return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Contact details deleted successfully.");
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

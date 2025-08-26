@@ -3,7 +3,6 @@ package com.devapp.studentms.service.impl;
 import com.devapp.studentms.mapper.ContactMapper;
 import com.devapp.studentms.model.Contact;
 import com.devapp.studentms.repo.ContactRepository;
-import com.devapp.studentms.repo.StudentRepository;
 import com.devapp.studentms.request.ContactRequest;
 import com.devapp.studentms.response.ContactResponse;
 import com.devapp.studentms.service.ContactService;
@@ -16,11 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ContactServiceImpl implements ContactService {
     private final ContactRepository contactRepository;
-    /*
-    public ContactServiceImpl(ContactRepository contactRepository) {
-        this.contactRepository = contactRepository;
-    }
-    */
 
     @Override
     public List<ContactResponse> fetchContacts() {
@@ -47,14 +41,5 @@ public class ContactServiceImpl implements ContactService {
             return ContactMapper.toResponse(saved);
         }
         return null;
-    }
-
-    @Override
-    public boolean deleteContact(Long studentId) {
-        return contactRepository.findByStudent_StudentId(studentId)
-                .map(contact -> {
-                    contactRepository.delete((Contact) contact);
-                    return true;
-                }).orElse(false);
     }
 }
