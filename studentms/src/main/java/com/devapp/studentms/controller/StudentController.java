@@ -16,6 +16,16 @@ import java.util.List;
 public class StudentController {
     private final StudentService studentService;
 
+    // Get all students
+    // GET url: http://localhost:8080/api/students
+    @GetMapping
+    public ResponseEntity<List<StudentResponse>> fetchStudents() {
+        List<StudentResponse> response = studentService.getStudents();
+        return ResponseEntity.ok(response);
+    }
+
+    // Create Student
+    // POST url: http://localhost:8080/api/students
     @PostMapping
     public ResponseEntity<StudentResponse> createStudent(@RequestBody StudentRequest request) {
         StudentResponse response = studentService.addStudent(request);
@@ -24,12 +34,8 @@ public class StudentController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<List<StudentResponse>> fetchStudents() {
-        List<StudentResponse> response = studentService.getStudents();
-        return ResponseEntity.ok(response);
-    }
-
+    // Get Student by studentId
+    // GET url: http://localhost:8080/api/students/3
     @GetMapping("/{id}")
     public ResponseEntity<StudentResponse> getStudent(@PathVariable("id") Long studentId) {
         StudentResponse response = studentService.getStudent(studentId);
@@ -38,6 +44,8 @@ public class StudentController {
         return ResponseEntity.ok(response);
     }
 
+    // Update Student by studentId and updatedStudent details
+    // PUT url: http://localhost:8080/api/students/2
     @PutMapping("/{id}")
     public ResponseEntity<StudentResponse> updateStudent(
             @PathVariable("id") Long studentId,
@@ -49,6 +57,8 @@ public class StudentController {
         return ResponseEntity.ok(response);
     }
 
+    // Delete Student by studentId
+    // DELETE url: http://localhost:8080/api/students/5
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteStudent(@PathVariable("id") Long studentId) {
         boolean deleted = studentService.deleteStudent(studentId);

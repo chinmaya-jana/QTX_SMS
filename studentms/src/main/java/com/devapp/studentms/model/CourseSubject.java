@@ -1,6 +1,7 @@
 package com.devapp.studentms.model;
 
 import com.devapp.studentms.enums.PaperType;
+import com.devapp.studentms.enums.Status;
 import com.devapp.studentms.id.CourseSubjectId;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,11 +10,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Entity
 @Table(name = "course_subject")
 public class CourseSubject {
     @EmbeddedId
@@ -28,6 +29,10 @@ public class CourseSubject {
 
     @Column(nullable = false)
     private Float credits;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
 
     @Column(length = 500)
     private String description;
@@ -55,5 +60,9 @@ public class CourseSubject {
     // override the setter method for paper type
     public void setPaperType(String paperTypeInput) {
         this.paperType = PaperType.fromString(paperTypeInput);
+    }
+
+    public void setStatus(String statusInput) {
+        this.status = Status.fromString(statusInput);
     }
 }

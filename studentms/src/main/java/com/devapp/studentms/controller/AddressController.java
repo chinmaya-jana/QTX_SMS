@@ -16,8 +16,8 @@ import java.util.List;
 public class AddressController {
     private final AddressService addressService;
 
-    // Get all address
-    // url: http://localhost:8080/api/address
+    // Get all addresses
+    // GET url: http://localhost:8080/api/address
     @GetMapping
     public ResponseEntity<List<AddressResponse>> fetchAddresses() {
         List<AddressResponse> responses = addressService.fetchAddresses();
@@ -25,7 +25,7 @@ public class AddressController {
     }
 
     // Get address by studentId
-    // url: http://localhost:8080/api/address?studentId=2
+    // GET url: http://localhost:8080/api/address?studentId=2
     @GetMapping(params = "studentId")
     public ResponseEntity<AddressResponse> getAddress(@RequestParam Long studentId) {
         AddressResponse response = addressService.getAddress(studentId);
@@ -35,7 +35,7 @@ public class AddressController {
     }
 
     // Update address by studentId
-    // url: http://localhost:8080/api/address?studentId=2
+    // PUT url: http://localhost:8080/api/address?studentId=2
     @PutMapping(params = "studentId")
     public ResponseEntity<AddressResponse> updateAddress(
             @RequestParam Long studentId,

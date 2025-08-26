@@ -13,11 +13,9 @@ public class CourseMapper {
 
         Course course = new Course();
         course.setCourseTitle(request.getCourseTitle());
-
         if(request.getDuration() != null) {
             course.setDuration(Period.parse(request.getDuration()));
         }
-
         course.setTotalSemester(request.getTotalSemester());
         course.setStatus(String.valueOf(request.getStatus()));
 

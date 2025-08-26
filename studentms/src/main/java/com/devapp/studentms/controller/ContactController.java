@@ -17,6 +17,7 @@ public class ContactController {
     private final ContactService contactService;
 
     // Get all contacts
+    // GET url: http://localhost:8080/api/contact
     @GetMapping
     public ResponseEntity<List<ContactResponse>> fetchContacts() {
         List<ContactResponse> responses = contactService.fetchContacts();
@@ -24,7 +25,7 @@ public class ContactController {
     }
 
     // Get contact by studentId
-    // url: http:localhost:8080/api/contact?studentId=1
+    // GET url: http:localhost:8080/api/contact?studentId=1
     @GetMapping(params = "studentId")
     public ResponseEntity<ContactResponse> getContact(@RequestParam Long studentId) {
         ContactResponse response = contactService.getContact(studentId);
@@ -34,7 +35,7 @@ public class ContactController {
     }
 
     // Update contact by studentId
-    //example: http://localhost:8080/api/contact?studentId=1
+    //PUT url: http://localhost:8080/api/contact?studentId=1
     @PutMapping(params = "studentId")
     public ResponseEntity<ContactResponse> updateContact(
             @RequestBody ContactRequest updatedContact,
