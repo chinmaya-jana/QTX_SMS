@@ -3,6 +3,7 @@ package com.devapp.studentms.controller;
 import com.devapp.studentms.request.AddressRequest;
 import com.devapp.studentms.response.AddressResponse;
 import com.devapp.studentms.service.AddressService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/address")
+@Tag(name = "Address APIs")
 public class AddressController {
     private final AddressService addressService;
 
@@ -40,7 +42,7 @@ public class AddressController {
     public ResponseEntity<AddressResponse> updateAddress(
             @RequestParam Long studentId,
             @RequestBody AddressRequest updatedAddress
-            ) {
+    ) {
         AddressResponse response = addressService.updateAddress(studentId, updatedAddress);
         if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 

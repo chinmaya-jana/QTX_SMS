@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Status {
-    ACTIVE("Active"),
-    INACTIVE("Inactive");
+    ACTIVE("ACTIVE"),
+    INACTIVE("INACTIVE");
 
     private final String label;
 

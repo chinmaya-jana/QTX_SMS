@@ -13,5 +13,4 @@ import lombok.Setter;
 public class SubjectRequest {
     private String subjectCode;
     private String subjectTitle;
-    private Status status;
 }

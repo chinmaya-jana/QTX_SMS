@@ -3,6 +3,7 @@ package com.devapp.studentms.controller;
 import com.devapp.studentms.request.SubjectRequest;
 import com.devapp.studentms.response.SubjectResponse;
 import com.devapp.studentms.service.SubjectService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/subjects")
+@Tag(name = "Subject APIs")
 public class SubjectController {
     private final SubjectService subjectService;
 

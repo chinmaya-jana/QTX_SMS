@@ -3,6 +3,7 @@ package com.devapp.studentms.controller;
 import com.devapp.studentms.request.ContactRequest;
 import com.devapp.studentms.response.ContactResponse;
 import com.devapp.studentms.service.ContactService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/contact")
+@Tag(name = "Contact APIs")
 public class ContactController {
     private final ContactService contactService;
 

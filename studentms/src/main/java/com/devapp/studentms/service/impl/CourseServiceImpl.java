@@ -1,27 +1,26 @@
 package com.devapp.studentms.service.impl;
 
+import com.devapp.studentms.enums.Status;
 import com.devapp.studentms.mapper.CourseMapper;
+import com.devapp.studentms.mapper.StudentMapper;
+import com.devapp.studentms.mapper.SubjectMapper;
 import com.devapp.studentms.model.Course;
 import com.devapp.studentms.repo.CourseRepository;
 import com.devapp.studentms.request.CourseRequest;
 import com.devapp.studentms.response.CourseResponse;
+import com.devapp.studentms.response.StudentResponse;
+import com.devapp.studentms.response.SubjectResponse;
 import com.devapp.studentms.service.CourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
-    /*
-    public CourseServiceImpl(CourseRepository courseRepository) {
-        this.courseRepository = courseRepository;
-    }
-    */
 
     @Override
     public CourseResponse addCourse(CourseRequest request) {
@@ -32,14 +31,6 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseResponse> fetchCourses() {
-        /*
-        List<Course> courses = courseRepository.findAll();
-        List<CourseResponse> responses = new ArrayList<>();
-        for(Course course : courses) {
-            responses.add(CourseMapper.toResponse(course));
-        }
-        return responses;
-        */
         return courseRepository.findAll()
                 .stream()
                 .map(CourseMapper::toResponse)
@@ -73,5 +64,41 @@ public class CourseServiceImpl implements CourseService {
                     Course saved = courseRepository.save(existingCourse);
                     return CourseMapper.toResponse(saved);
                 }).orElse(null);
+    }
+
+    // ---------------------------ADVANCE API END POINTS----------------------------------
+
+    @Override
+    public List<StudentResponse> findAllStudentsByCourse(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if(course == null) return null;
+
+        return course.getStudents()
+                .stream()
+                .map(StudentMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<StudentResponse> findAllActiveStudentsByCourse(Long courseId, Status status) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if(course == null) return null;
+
+        return course.getStudents()
+                .stream()
+                .filter(student -> student.getStatus() == status)
+                .map(StudentMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<SubjectResponse> findAllSubjectsByCourse(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if(course == null) return null;
+
+        return course.getCourseSubjectSet()
+                .stream()
+                .map(cs -> SubjectMapper.toResponse(cs.getSubject()))
+                .toList();
     }
 }

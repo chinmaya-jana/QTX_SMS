@@ -3,6 +3,7 @@ package com.devapp.studentms.controller;
 import com.devapp.studentms.request.CourseSubjectRequest;
 import com.devapp.studentms.response.CourseSubjectResponse;
 import com.devapp.studentms.service.CourseSubjectService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/course-subject")
+@Tag(name = "CourseSubject APIs")
 public class CourseSubjectController {
     private final CourseSubjectService courseSubjectService;
 
@@ -25,8 +27,8 @@ public class CourseSubjectController {
     }
 
     // Create CourseSubject
-    // POST url: http://localhost:8080/api/course-subject?courseId=1&studentId=2
-    @PostMapping(params = {"courseId", "studentId"})
+    // POST url: http://localhost:8080/api/course-subject?courseId=1&subjectId=2
+    @PostMapping(params = {"courseId", "subjectId"})
     public ResponseEntity<?> createCourseSubject(
             @RequestParam("courseId") Long courseId,
             @RequestParam("subjectId") Long subjectId,
