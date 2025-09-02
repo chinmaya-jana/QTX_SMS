@@ -80,13 +80,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<StudentResponse> findAllActiveStudentsByCourse(Long courseId, Status status) {
+    public List<StudentResponse> findAllStudentsBasedOnStatus(Long courseId, String status) {
         Course course = courseRepository.findById(courseId).orElse(null);
         if(course == null) return null;
 
+        Status enumStatus = Status.fromString(status);
         return course.getStudents()
                 .stream()
-                .filter(student -> student.getStatus() == status)
+                .filter(student -> student.getStatus() == enumStatus)
                 .map(StudentMapper::toResponse)
                 .toList();
     }

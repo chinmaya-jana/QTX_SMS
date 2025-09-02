@@ -1,6 +1,5 @@
 package com.devapp.studentms.controller;
 
-import com.devapp.studentms.enums.Status;
 import com.devapp.studentms.request.CourseRequest;
 import com.devapp.studentms.response.CourseResponse;
 import com.devapp.studentms.response.StudentResponse;
@@ -25,26 +24,33 @@ public class CourseController {
     // Fetch all Courses
     // GET url: http://localhost:8080/api/courses
     @GetMapping
-    public ResponseEntity<List<CourseResponse>> getCourses() {
+    public ResponseEntity<?> getCourses() {
         List<CourseResponse> responses = courseService.fetchCourses();
+        if(responses.isEmpty()) return ResponseEntity.ok("No Course record found.");
+
         return ResponseEntity.ok(responses);
     }
 
     // Create a Course
     // POST url: http://localhost:8080/api/courses
     @PostMapping
-    public ResponseEntity<CourseResponse> createCourse(@RequestBody CourseRequest request) {
-        CourseResponse response = courseService.addCourse(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<?> createCourse(@RequestBody CourseRequest request) {
+        try {
+            CourseResponse response = courseService.addCourse(request);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // Fetch Course by courseId
     // GET url: http://localhost:8080/api/courses/2
     @GetMapping("/{id}")
-    public ResponseEntity<CourseResponse> getCourse(@PathVariable("id") Long courseId) {
+    public ResponseEntity<?> getCourse(@PathVariable("id") Long courseId) {
         CourseResponse response = courseService.fetchCourse(courseId);
         if (response == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No record available in the DB of courseId: " + courseId);
         }
         return ResponseEntity.ok(response);
     }
@@ -52,23 +58,28 @@ public class CourseController {
     // Delete Course by courseId
     // DELETE url: http://localhost:8080/api/courses/1
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCourse(@PathVariable("id") Long courseId) {
+    public ResponseEntity<?> deleteCourse(@PathVariable("id") Long courseId) {
         boolean deleted = courseService.deleteCourse(courseId);
-        if(deleted) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        if(deleted) return ResponseEntity.status(HttpStatus.OK).body("Course record is deleted successfully, of courseId: " + courseId);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No record available in the DB of courseId: " + courseId);
     }
 
     // Update Course by courseId and updatedCourse
     // PUT url: http://localhost:8080/api/courses/1
     @PutMapping("/{id}")
-    public ResponseEntity<CourseResponse> updateCourse(
+    public ResponseEntity<?> updateCourse(
             @PathVariable("id") Long courseId,
             @RequestBody CourseRequest updatedRequest) {
-        CourseResponse response = courseService.updateCourse(courseId, updatedRequest);
+        try {
+            CourseResponse response = courseService.updateCourse(courseId, updatedRequest);
 
-        if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            if (response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No course record found in DB of courseId: " + courseId);
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     //--------------------------------------------------------------------------------
@@ -92,21 +103,26 @@ public class CourseController {
     }
 
     // Fetch all ACTIVE Students of a particular Course
-    // GET url: http://localhost:8080/api/courses/{id}/students?status=Active
+    // GET url: http://localhost:8080/api/courses/{id}/students/status?status=Active
     @GetMapping("/{id}/students/status")
     @Operation(summary = "Fetch all ACTIVE or INACTIVE students of a course")
-    public ResponseEntity<?> fetchAllActiveStudentsOfCourse(
+    public ResponseEntity<?> fetchAllStudentsBasedOnStatus(
             @PathVariable("id") Long courseId,
-            @RequestParam("status") Status status) {
-        List<StudentResponse> responses = courseService.findAllActiveStudentsByCourse(courseId, status);
-        if(responses == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid courseId: " + courseId);
+            @RequestParam("status") String status) {
+        try {
+            List<StudentResponse> responses = courseService.findAllStudentsBasedOnStatus(courseId, status);
+            if (responses == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid courseId: " + courseId);
 
-        if (responses.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body("No Student found with status " + status.toString().toUpperCase() + " for COURSE_ID: " + courseId);
+            if (responses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body("No Student found with status " + status.toUpperCase() + " for COURSE_ID: " + courseId);
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(responses);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
     // Fetch all Subjects of a particular Course
@@ -114,7 +130,7 @@ public class CourseController {
     @GetMapping("/{id}/subjects")
     public ResponseEntity<?> fetchAllSubjectsOfCourse(@PathVariable("id") Long courseId) {
         List<SubjectResponse> responses = courseService.findAllSubjectsByCourse(courseId);
-        if(responses == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid courseId: " + courseId);
+        if(responses == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No course record found in DB of courseId: " + courseId);
 
         if (responses.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK)

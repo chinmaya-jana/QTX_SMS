@@ -21,7 +21,7 @@ public interface CourseService {
 
     List<StudentResponse> findAllStudentsByCourse(Long courseId);
 
-    List<StudentResponse> findAllActiveStudentsByCourse(Long courseId, Status status);
+    List<StudentResponse> findAllStudentsBasedOnStatus(Long courseId, String status);
 
     List<SubjectResponse> findAllSubjectsByCourse(Long courseId);
 }

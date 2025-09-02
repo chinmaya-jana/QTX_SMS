@@ -25,7 +25,7 @@ public class AddressMapper {
 
         return AddressResponse.builder()
                 .studentId(address.getStudent().getStudentId())
-                .studentName(address.getStudent().getFirstName())
+                .studentName(address.getStudent().getFirstName() + " " + address.getStudent().getLastName())
                 .city(address.getCity())
                 .district(address.getDistrict())
                 .state(address.getState())

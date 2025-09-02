@@ -15,6 +15,8 @@ import lombok.Setter;
 @Table(name = "attendance_record",
         uniqueConstraints = @UniqueConstraint(columnNames = {"sessionId", "studentId"}))
 public class AttendanceRecord {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long sessionId;
     private Long studentId;
