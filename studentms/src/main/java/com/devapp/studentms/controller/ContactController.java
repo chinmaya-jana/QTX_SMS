@@ -21,17 +21,18 @@ public class ContactController {
     // Get all contacts
     // GET url: http://localhost:8080/api/contact
     @GetMapping
-    public ResponseEntity<List<ContactResponse>> fetchContacts() {
+    public ResponseEntity<?> fetchContacts() {
         List<ContactResponse> responses = contactService.fetchContacts();
+        if(responses.isEmpty()) return ResponseEntity.status(HttpStatus.OK).body("No record found, that means empty student-details");
         return ResponseEntity.ok(responses);
     }
 
     // Get contact by studentId
     // GET url: http:localhost:8080/api/contact?studentId=1
     @GetMapping(params = "studentId")
-    public ResponseEntity<ContactResponse> getContact(@RequestParam Long studentId) {
+    public ResponseEntity<?> getContact(@RequestParam Long studentId) {
         ContactResponse response = contactService.getContact(studentId);
-        if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid studentId: " + studentId);
 
         return ResponseEntity.ok(response);
     }
@@ -39,13 +40,19 @@ public class ContactController {
     // Update contact by studentId
     //PUT url: http://localhost:8080/api/contact?studentId=1
     @PutMapping(params = "studentId")
-    public ResponseEntity<ContactResponse> updateContact(
+    public ResponseEntity<?> updateContact(
             @RequestBody ContactRequest updatedContact,
             @RequestParam Long studentId) {
-        ContactResponse response = contactService.updateContact(updatedContact, studentId);
+        try {
+            ContactResponse response = contactService.updateContact(updatedContact, studentId);
 
-        if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            if (response == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid studentId: " + studentId);
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 }

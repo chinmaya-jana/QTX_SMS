@@ -21,27 +21,33 @@ public class StudentController {
     // Get all students
     // GET url: http://localhost:8080/api/students
     @GetMapping
-    public ResponseEntity<List<StudentResponse>> fetchStudents() {
+    public ResponseEntity<?> fetchStudents() {
         List<StudentResponse> response = studentService.getStudents();
+        if(response.isEmpty()) return ResponseEntity.ok("No Student record found in DB");
         return ResponseEntity.ok(response);
     }
 
     // Create Student
     // POST url: http://localhost:8080/api/students
     @PostMapping
-    public ResponseEntity<StudentResponse> createStudent(@RequestBody StudentRequest request) {
-        StudentResponse response = studentService.addStudent(request);
-        if(response == null) return ResponseEntity.notFound().build();
+    public ResponseEntity<?> createStudent(@RequestBody StudentRequest request) {
+        try {
+            StudentResponse response = studentService.addStudent(request);
+            if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Course record found in DB of courseId: " + request.getCourseId());
 
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // Get Student by studentId
     // GET url: http://localhost:8080/api/students/3
     @GetMapping("/{id}")
-    public ResponseEntity<StudentResponse> getStudent(@PathVariable("id") Long studentId) {
+    public ResponseEntity<?> getStudent(@PathVariable("id") Long studentId) {
         StudentResponse response = studentService.getStudent(studentId);
-        if(response == null) return ResponseEntity.notFound().build();
+        if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Student record found in DB, of studentId: " + studentId);
 
         return ResponseEntity.ok(response);
     }
@@ -49,23 +55,29 @@ public class StudentController {
     // Update Student by studentId and updatedStudent details
     // PUT url: http://localhost:8080/api/students/2
     @PutMapping("/{id}")
-    public ResponseEntity<StudentResponse> updateStudent(
+    public ResponseEntity<?> updateStudent(
             @PathVariable("id") Long studentId,
             @RequestBody StudentRequest updatedStudent) {
-        StudentResponse response = studentService.updateStudent(studentId, updatedStudent);
+        try {
+            StudentResponse response = studentService.updateStudent(studentId, updatedStudent);
 
-        if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            if (response == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No student record found in DB of studentId: " + studentId);
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // Delete Student by studentId
     // DELETE url: http://localhost:8080/api/students/5
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteStudent(@PathVariable("id") Long studentId) {
+    public ResponseEntity<?> deleteStudent(@PathVariable("id") Long studentId) {
         boolean deleted = studentService.deleteStudent(studentId);
-        if(deleted) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        if(deleted) return ResponseEntity.status(HttpStatus.OK).body("Student record is successfully deleted, studentId: " + studentId);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid student ID");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid studentId: " + studentId);
     }
 }

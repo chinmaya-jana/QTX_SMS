@@ -21,8 +21,9 @@ public class CourseSubjectController {
     // Get all courseSubject
     // GET url: http://localhost:8080/api/course-subject
     @GetMapping
-    public ResponseEntity<List<CourseSubjectResponse>> getAllCourseSubject() {
+    public ResponseEntity<?> getAllCourseSubject() {
         List<CourseSubjectResponse> responses = courseSubjectService.getAllCourseSubjects();
+        if(responses.isEmpty()) return ResponseEntity.ok("Empty, that means no record found in DB");
         return ResponseEntity.ok(responses);
     }
 
@@ -33,10 +34,15 @@ public class CourseSubjectController {
             @RequestParam("courseId") Long courseId,
             @RequestParam("subjectId") Long subjectId,
             @RequestBody CourseSubjectRequest request) {
-        CourseSubjectResponse response = courseSubjectService.addCourseSubject(courseId, subjectId, request);
-        if(response != null) return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        try {
+            CourseSubjectResponse response = courseSubjectService.addCourseSubject(courseId, subjectId, request);
+            if (response == null) return ResponseEntity.status(404).body("CourseSubject not found with courseId: " + courseId + " and subjectId: " + subjectId);
 
-        return ResponseEntity.status(404).body("CourseSubject not found with courseId: " + courseId + " and subjectId: " + subjectId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // Get CourseSubject by courseId and subjectId
@@ -58,10 +64,15 @@ public class CourseSubjectController {
             @RequestParam("courseId") Long courseId,
             @RequestParam("subjectId") Long subjectId,
             @RequestBody CourseSubjectRequest updatedCourseSubject) {
-        CourseSubjectResponse response = courseSubjectService.updateCourseSubject(courseId, subjectId, updatedCourseSubject);
-        if(response != null) return ResponseEntity.ok(response);
+        try {
+            CourseSubjectResponse response = courseSubjectService.updateCourseSubject(courseId, subjectId, updatedCourseSubject);
+            if (response == null) return ResponseEntity.status(404).body("CourseSubject not found with courseId: " + courseId + " & subjectId: " + subjectId);
 
-        return ResponseEntity.status(404).body("CourseSubject not found with courseId: " + courseId + " & subjectId: " + subjectId);
+            return ResponseEntity.ok(response);
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // Delete CourseSubject by courseId and subjectId
@@ -71,7 +82,7 @@ public class CourseSubjectController {
             @RequestParam Long courseId,
             @RequestParam Long subjectId) {
         boolean deleted = courseSubjectService.deleteCourseSubject(courseId, subjectId);
-        if(deleted) return ResponseEntity.status(HttpStatus.NO_CONTENT).body("CourseSubject deleted successfully.");
+        if(deleted) return ResponseEntity.status(HttpStatus.OK).body("CourseSubject deleted successfully of courseId: " + courseId + " & subjectId: " + subjectId);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CourseSubject not found with courseId: " + courseId + " & subjectId: " + subjectId);
     }

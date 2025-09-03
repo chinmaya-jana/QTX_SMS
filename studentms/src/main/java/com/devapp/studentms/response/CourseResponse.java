@@ -14,7 +14,7 @@ public class CourseResponse {
     private final String courseTitle;
     private final String duration;   //e.g: "3 years 4 months 15 days"
     private final Integer totalSemester;
-    private final String status;
+    private final Status status;
 
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;

@@ -21,25 +21,31 @@ public class SubjectController {
     // Get all subjects
     // GET url: http://localhost:8080/api/subjects
     @GetMapping
-    public ResponseEntity<List<SubjectResponse>> fetchAllSubjects() {
+    public ResponseEntity<?> fetchAllSubjects() {
         List<SubjectResponse> responses = subjectService.getAllSubjects();
+        if(responses.isEmpty()) return ResponseEntity.ok("No subject record found in DB");
         return ResponseEntity.ok(responses);
     }
 
     // Create Subject
     // POST url: http://localhost:8080/api/subjects
     @PostMapping
-    public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectRequest request) {
-        SubjectResponse response = subjectService.addSubject(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<?> createSubject(@RequestBody SubjectRequest request) {
+        try {
+            SubjectResponse response = subjectService.addSubject(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // Get Subject by subjectId
     // GET url: http://localhost:8080/api/subjects/2
     @GetMapping("/{id}")
-    public ResponseEntity<SubjectResponse> getSubject(@PathVariable("id") Long subjectId) {
+    public ResponseEntity<?> getSubject(@PathVariable("id") Long subjectId) {
         SubjectResponse response = subjectService.getSubject(subjectId);
-        if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No subject record found in DB of subjectId: " + subjectId);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -47,13 +53,18 @@ public class SubjectController {
     // Update Subject by subjectId
     // PUT url: http://localhost:8080/api/subjects/3
     @PutMapping("/{id}")
-    public ResponseEntity<SubjectResponse> updateSubject(
+    public ResponseEntity<?> updateSubject(
             @PathVariable("id") Long subjectId,
             @RequestBody SubjectRequest updatedSubject) {
-        SubjectResponse response = subjectService.updateSubject(subjectId, updatedSubject);
-        if(response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        try {
+            SubjectResponse response = subjectService.updateSubject(subjectId, updatedSubject);
+            if (response == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid subjectId: " + subjectId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     // Delete Subject by subjectId
@@ -61,8 +72,8 @@ public class SubjectController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSubject(@PathVariable("id") Long subjectId) {
         boolean deleted = subjectService.deleteSubject(subjectId);
-        if(deleted) return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Subject deleted successfully");
+        if(deleted) return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Subject deleted successfully, subjectId: " + subjectId);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid Subject ID.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid SubjectId: " + subjectId);
     }
 }

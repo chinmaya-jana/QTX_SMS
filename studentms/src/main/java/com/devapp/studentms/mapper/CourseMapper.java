@@ -1,5 +1,6 @@
 package com.devapp.studentms.mapper;
 
+import com.devapp.studentms.enums.Status;
 import com.devapp.studentms.model.Course;
 import com.devapp.studentms.request.CourseRequest;
 import com.devapp.studentms.response.CourseResponse;
@@ -32,7 +33,7 @@ public class CourseMapper {
                 .courseTitle(course.getCourseTitle())
                 .duration(CourseResponse.formatDuration(course.getDuration()))
                 .totalSemester(course.getTotalSemester())
-                .status(course.getStatus().getLable())
+                .status(course.getStatus())
                 .createdAt(course.getCreatedAt())
                 .updatedAt(course.getUpdatedAt())
                 .build();
